@@ -4,6 +4,7 @@
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
    "devDependencies": {
+      "@faker-js/faker": "^8.0.2",
       "@types/bcrypt": "^5.0.0",
       "@types/jest": "^29.5.3",
       "@types/node": "^16.11.10",
@@ -21,6 +22,7 @@
       "bcrypt": "^5.1.0",
       "dotenv": "^16.3.1",
       "graphql": "^16.7.1",
+      "graphql-request": "^6.1.0",
       "graphql-tools": "^9.0.0",
       "graphql-yoga": "^4.0.3",
       "jest-mock": "^29.6.1",
@@ -31,8 +33,9 @@
       "uuid": "^9.0.0"
    },
    "scripts": {
-      "test": "jest",
-      "start": "nodemon --exec ts-node src/index.ts",
+      "test": "NODE_ENV=test jest",
+      "start": "NODE_ENV=development nodemon --exec ts-node src/index.ts",
+      "test-server": "NODE_ENV=test ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
       "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
    }

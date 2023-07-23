@@ -2,17 +2,14 @@ import { faker } from '@faker-js/faker';
 import { request } from 'graphql-request';
 import * as dotenv from "dotenv";
 import { User } from '../entity/User';
-import { createDataSourceConn } from '../utils/dataSourceConn';
-import { TestDataSource } from '../data-source';
+
+import { startServer } from '../startServer';
 
 dotenv.config();
+const getHost = () => process.env.TEST_HOST as string;
 
 beforeAll(async () => {
-  await createDataSourceConn();
-});
-
-afterAll(async () => {
-  await TestDataSource.destroy();
+  await startServer();
 });
 
 const email = faker.internet.email();
@@ -25,7 +22,7 @@ const mutation = `
 `;
 
 test('Register user', async () => {
-  const response = await request(process.env.TEST_HOST as string, mutation);
+  const response = await request(getHost(), mutation);
   expect(response).toEqual({ register: true });
   const users = await User.find({ where: { email } });
   expect(users).toHaveLength(1);

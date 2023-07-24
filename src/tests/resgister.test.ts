@@ -6,10 +6,11 @@ import { User } from '../entity/User';
 import { startServer } from '../startServer';
 
 dotenv.config();
-const getHost = () => process.env.TEST_HOST as string;
+let getHost = () => "";
 
 beforeAll(async () => {
   await startServer();
+  getHost = () => process.env.TEST_HOST as string;
 });
 
 const email = faker.internet.email();

@@ -1,11 +1,13 @@
+import { RedisClientType } from "@redis/client";
+
 export interface ResolverMap {
   [key: string]: {
     [key: string]: (
       parent: any,
       args: any,
       context: {
-        // redis: Redis;
-        // url: string;
+        redisClient: RedisClientType
+        url: string
         // session: Session;
         // req: Request;
         // res: Response;

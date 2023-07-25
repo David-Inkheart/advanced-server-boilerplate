@@ -5,10 +5,11 @@ import * as bcrypt from "bcrypt";
 import { registerSchema } from "../../utils/validators";
 import { formatYupError } from "../../utils/formatYupError";
 import { duplicateEmail } from "./errorMessages";
+import { createConfirmEmailLink } from "../../utils/createConfirmEmailLink";
 
 const resolvers: ResolverMap = {
   Mutation: {
-    register: async (_, args: GQL.IRegisterOnMutationArguments) => {
+    register: async (_, args: GQL.IRegisterOnMutationArguments, { url, redisClient }) => {
       try {
         await registerSchema.validate(args, { abortEarly: false });
       } catch (err) {
@@ -37,6 +38,9 @@ const resolvers: ResolverMap = {
       })
         
       await user.save();
+
+      const link = await createConfirmEmailLink(url, user.id, redisClient);
+
       return null;
     }
   }

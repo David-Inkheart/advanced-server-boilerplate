@@ -2,9 +2,8 @@ import { faker } from '@faker-js/faker';
 import { request } from 'graphql-request';
 import { User } from '../../entity/User';
 import { duplicateEmail, badEmail, badPassword } from './errorMessages';
-import { startServer } from '../../startServer';
-
 import * as dotenv from 'dotenv';
+import { createDataSourceConn } from '../../utils/dataSourceConn';
 
 dotenv.config();
 
@@ -25,7 +24,7 @@ const mutation = (e: string, p: string) => `
 let getHost = () => "";
 
 beforeAll(async () => {
-  await startServer();
+  await createDataSourceConn();
   getHost = () => process.env.TEST_HOST as string;
 });
 

@@ -26,8 +26,7 @@ export const startServer = async () => {
 
   // merge all the schemas into one and add redis to the context object
   const schema: GraphQLSchema = mergeSchemas({
-    schemas,
-    resolvers: {},
+    schemas
   });
 
   // the url object is the url of the request e.g. http://localhost:4000/graphql
@@ -35,7 +34,8 @@ export const startServer = async () => {
     schema,
     context: ({ request }) => ({
       redisClient,
-      url: new URL(request.url),
+      // remove graphql from the url using request.url
+      url: new URL(request.url).origin,
     }),
   });
 
@@ -57,6 +57,7 @@ export const startServer = async () => {
     const userId = await redisClient.get(id);
     if (userId) {
       await User.update({ id: userId }, { confirmed: true });
+      await redisClient.del(id);
       res.send('ok');
     } else {
       res.send('invalid');

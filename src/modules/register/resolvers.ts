@@ -39,7 +39,7 @@ const resolvers: ResolverMap = {
         
       await user.save();
 
-      const link = await createConfirmEmailLink(url, user.id, redisClient);
+      await createConfirmEmailLink(url, user.id, redisClient);
 
       return null;
     }

@@ -7,6 +7,8 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.[jt]sx?$': ['ts-jest', { tsconfig: './tsconfig.json' }],
   },
+  globalSetup: './global-setup.js',
+  // globalTeardown: './global-teardown.js',
   collectCoverage: true,
   coverageDirectory: 'coverage',
   moduleDirectories: ['node_modules', 'src'],

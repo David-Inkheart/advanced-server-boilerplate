@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { AppDataSource, TestDataSource } from "../data-source";
+import { AppDataSource, TestDataSource } from "./data-source";
 
 export const createDataSourceConn = async () => {
   let dataSourceOptions: DataSource | undefined;

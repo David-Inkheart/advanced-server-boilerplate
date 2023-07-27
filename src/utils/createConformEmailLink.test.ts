@@ -1,21 +1,28 @@
 import { faker } from "@faker-js/faker";
+import fetch from 'node-fetch';
+import { DataSource } from "typeorm";
+import { RedisClientType } from "@redis/client";
+import { redisClient } from "../data/redis/redisClient"
 import { User } from "../entity/User";
 import { createConfirmEmailLink } from "./createConfirmEmailLink"
-import { redisClient } from "./redisClient"
-import { RedisClientType } from "@redis/client";
-import { createDataSourceConn } from "./dataSourceConn";
-import fetch from 'node-fetch';
+import { createDataSourceConn } from "../data/dataSource/dataSourceConn";
+
 
 let userId = "";
+let conn: DataSource;
 
 beforeAll(async () => {
-  await createDataSourceConn();
+  conn = await createDataSourceConn();
   const user = await User.create({
     email: faker.internet.email(),
     password: faker.internet.password(),
   }).save();
   userId = user.id;
-})
+});
+
+afterAll(async () => {
+  await conn.destroy();
+});
 
 describe('createConformEmailLink', () => {
   it('should check that the link confirms user and clears key in redis', async () => {

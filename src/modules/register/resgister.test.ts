@@ -1,15 +1,16 @@
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker';
+import { DataSource } from 'typeorm';
 import { request } from 'graphql-request';
+import * as dotenv from 'dotenv';
 import { User } from '../../entity/User';
 import { duplicateEmail, badEmail, badPassword } from './errorMessages';
-import * as dotenv from 'dotenv';
-import { createDataSourceConn } from '../../utils/dataSourceConn';
+import { createDataSourceConn } from '../../data/dataSource/dataSourceConn';
 
 dotenv.config();
 
-const email = faker.internet.email();
+const email = "jack@email.com";
 const email2 = "b@.com";
-const password = faker.internet.password();
+const password = "123456";
 const password2 = "gh";
 
 const mutation = (e: string, p: string) => `
@@ -21,11 +22,16 @@ const mutation = (e: string, p: string) => `
   }
 `;
 
+let conn: DataSource
 let getHost = () => "";
 
 beforeAll(async () => {
-  await createDataSourceConn();
+  conn = await createDataSourceConn();
   getHost = () => process.env.TEST_HOST as string;
+});
+
+afterAll(async () => {
+  await conn.destroy();
 });
 
 describe('Register user', () => {
@@ -40,8 +46,12 @@ describe('Register user', () => {
   });
 
   it('should check that same email cannot be registered twice', async () => {
+    const email = "bob@email.com"
+    const password = "123456"
     const response: any = await request(getHost(), mutation(email, password));
-    expect(response).toEqual({
+    expect(response).toMatchObject(expect.any(Object));
+    const response2: any = await request(getHost(), mutation(email, password));
+    expect(response2).toEqual({
       register: [{
         path: "email",
         message: duplicateEmail

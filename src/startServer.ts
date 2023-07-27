@@ -1,10 +1,10 @@
 // import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
 import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
-import { createDataSourceConn } from './utils/dataSourceConn';
+import { createDataSourceConn } from './data/dataSource/dataSourceConn';
 import * as fs from 'fs';
 import { GraphQLSchema } from 'graphql';
-import { redisClient } from './utils/redisClient';
+import { redisClient } from './data/redis/redisClient';
 import * as express from 'express';
 import { User } from './entity/User';
 
@@ -41,14 +41,6 @@ export const startServer = async () => {
 
   const yoga = createYoga(yogaConfig);
 
-  // Start the db connection
-  try {
-    await createDataSourceConn();
-    console.info('Database connection established');
-  } catch (error) {
-    console.error('Database connection failed', error);
-  }
-
   app.use(yoga.graphqlEndpoint, yoga)
 
   // Handle email confirmation
@@ -63,6 +55,14 @@ export const startServer = async () => {
       res.send('invalid');
     }
   });
+
+  // Start the db connection
+  try {
+    await createDataSourceConn();
+    console.info('Database connection established');
+  } catch (error) {
+    console.error('Database connection failed', error);
+  }
 
   const port = process.env.PORT || 4000;
   const application = await app.listen(port, () => {

@@ -1,41 +1,22 @@
-// import { createServer } from 'node:http';
 import { createYoga } from 'graphql-yoga';
-import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
-import { createDataSourceConn } from './data/dataSource/dataSourceConn';
-import * as fs from 'fs';
-import { GraphQLSchema } from 'graphql';
-import { redisClient } from './data/redis/redisClient';
 import * as express from 'express';
-import { User } from './entity/User';
+import { redisClient } from './data/redis/redisClient';
+import { createDataSourceConn } from './data/dataSource/dataSourceConn';
+import { confirmEmail } from './routes/confirmEmail';
+import { generateSchema } from './utils/generateSchema';
+
 
 export const startServer = async () => {
+
   const app = express();
-  // create an empty array to hold all the schemas
-  const schemas: GraphQLSchema[] = [];
-  // read all the folders in the modules folder
-  const folders = fs.readdirSync(__dirname + '/modules');
-  // loop through the folders
-  folders.forEach(folder => {
-    // read the resolvers file {imported as resolvers}
-    const { default: resolvers } = require(`./modules/${folder}/resolvers`);
-    // read the typeDefs file
-    const typeDefs = fs.readFileSync(__dirname + `/modules/${folder}/TypeDefs.graphql`, 'utf8');
-    // push the resolvers and typeDefs to the schema array
-    schemas.push(makeExecutableSchema({ typeDefs, resolvers }));
-  });
 
-  // merge all the schemas into one and add redis to the context object
-  const schema: GraphQLSchema = mergeSchemas({
-    schemas
-  });
-
-  // the url object is the url of the request e.g. http://localhost:4000/graphql
+  // Create the yoga server with the schema and context
   const yogaConfig: any  = createYoga({
-    schema,
+    schema: generateSchema(),
     context: ({ request }) => ({
       redisClient,
-      // remove graphql from the url using request.url
-      url: new URL(request.url).origin,
+      // remove graphql from the url using request.url.replace (url: new URL(request.url).origin.replace('graphql', ''),)
+      url: request.url.replace('/graphql', ''),
     }),
   });
 
@@ -44,17 +25,7 @@ export const startServer = async () => {
   app.use(yoga.graphqlEndpoint, yoga)
 
   // Handle email confirmation
-  app.get('/confirm/:id', async (req, res) => {
-    const { id } = req.params;
-    const userId = await redisClient.get(id);
-    if (userId) {
-      await User.update({ id: userId }, { confirmed: true });
-      await redisClient.del(id);
-      res.send('ok');
-    } else {
-      res.send('invalid');
-    }
-  });
+  app.get('/confirm/:id', confirmEmail);
 
   // Start the db connection
   try {

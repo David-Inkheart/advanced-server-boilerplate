@@ -41,7 +41,6 @@ const resolvers: ResolverMap = {
       await user.save();
 
       if (process.env.NODE_ENV !== "test") {
-        //
         await sendEmail(email, await createConfirmEmailLink(url, user.id, redisClient));
       };
 

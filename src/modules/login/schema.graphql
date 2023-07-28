@@ -1,0 +1,8 @@
+type Error {
+  path: String!
+  message: String!
+}
+
+type Mutation {
+  login(email: String!, password: String!): [Error!]
+}

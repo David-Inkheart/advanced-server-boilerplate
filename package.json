@@ -5,6 +5,13 @@
    "type": "commonjs",
    "devDependencies": {
       "@faker-js/faker": "^8.0.2",
+      "@graphql-codegen/cli": "5.0.0",
+      "@graphql-codegen/graphql-modules-preset": "^4.0.1",
+      "@graphql-codegen/introspection": "^4.0.0",
+      "@graphql-codegen/typescript": "4.0.1",
+      "@graphql-codegen/typescript-graphql-request": "^5.0.0",
+      "@graphql-codegen/typescript-operations": "^4.0.1",
+      "@graphql-codegen/typescript-resolvers": "4.0.1",
       "@types/bcrypt": "^5.0.0",
       "@types/express": "^4.17.17",
       "@types/jest": "^29.5.3",
@@ -21,8 +28,10 @@
       "typescript": "4.5.2"
    },
    "dependencies": {
+      "@graphql-codegen/typed-document-node": "^5.0.1",
       "@graphql-tools/graphql-file-loader": "^8.0.0",
       "@graphql-tools/load": "^8.0.0",
+      "@graphql-tools/load-files": "^7.0.0",
       "bcrypt": "^5.1.0",
       "dotenv": "^16.3.1",
       "express": "^4.18.2",
@@ -44,6 +53,6 @@
       "start": "NODE_ENV=development nodemon --exec ts-node src/index.ts",
       "test": "NODE_ENV=test jest --forceExit",
       "typeorm": "typeorm-ts-node-commonjs",
-      "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
+      "codegen": "graphql-codegen --config codegen.ts"
    }
 }

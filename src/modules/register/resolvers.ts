@@ -6,6 +6,7 @@ import { registerSchema } from "../../utils/validators";
 import { formatYupError } from "../../utils/formatYupError";
 import { duplicateEmail } from "./errorMessages";
 import { createConfirmEmailLink } from "../../utils/createConfirmEmailLink";
+import { sendEmail } from "../../services/sendEmail";
 
 const resolvers: ResolverMap = {
   Mutation: {
@@ -39,7 +40,10 @@ const resolvers: ResolverMap = {
         
       await user.save();
 
-      await createConfirmEmailLink(url, user.id, redisClient);
+      if (process.env.NODE_ENV !== "test") {
+        //
+        await sendEmail(email, await createConfirmEmailLink(url, user.id, redisClient));
+      };
 
       return null;
     }

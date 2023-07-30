@@ -1,5 +1,8 @@
 import { createYoga } from 'graphql-yoga';
 import * as express from 'express';
+import session = require('express-session');
+import RedisStore from "connect-redis";
+import * as cors from 'cors';
 import { redisClient } from './data/redis/redisClient';
 import { createDataSourceConn } from './data/dataSource/dataSourceConn';
 import { confirmEmail } from './routes/confirmEmail';
@@ -8,6 +11,7 @@ import { generateSchema } from './utils/generateSchema';
 
 export const startServer = async () => {
 
+  // Create the express app
   const app = express();
 
   // Create the yoga server with the schema and context
@@ -15,14 +19,46 @@ export const startServer = async () => {
     schema: generateSchema(),
     context: ({ request }) => ({
       redisClient,
-      // remove graphql from the url using request.url.replace (url: new URL(request.url).origin.replace('graphql', ''),)
+      // remove graphql from the url
       url: request.url.replace('/graphql', ''),
     }),
   });
 
+  // Create the yoga server
   const yoga = createYoga(yogaConfig);
 
-  app.use(yoga.graphqlEndpoint, yoga)
+  // Add the graphql endpoint to the express app
+  app.use(yoga.graphqlEndpoint, yoga);
+
+  // Initialize store.
+  let redisStore = new RedisStore({
+    client: redisClient,
+    prefix: "myapp:",
+  })
+
+  // Add the session middleware
+  app.use(
+    session({
+      name: 'sid',
+      secret: process.env.SESSION_SECRET as string,
+      resave: false,
+      saveUninitialized: true,
+      store: redisStore,
+      cookie: { 
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+      }
+    })
+  );
+
+  // Add the cors middleware
+  app.use(
+    cors({
+      credentials: true,
+      origin: process.env.FRONTEND_HOST as string,
+    })
+  );
 
   // Handle email confirmation
   app.get('/confirm/:id', confirmEmail);

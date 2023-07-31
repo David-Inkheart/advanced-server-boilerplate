@@ -1,4 +1,5 @@
 import { RedisClientType } from "@redis/client";
+import { Request } from "express";
 
 export interface ResolverMap {
   [key: string]: {
@@ -9,10 +10,14 @@ export interface ResolverMap {
         redisClient: RedisClientType
         url: string
         // session: Session;
-        // req: Request;
+        req: Request;
         // res: Response;
       },
       info: any
     ) => any;
   };
+}
+
+export interface Session {
+  userId: string;
 }

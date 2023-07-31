@@ -1,4 +1,4 @@
-import { ResolverMap } from "../../types/graphql-utils";
+import { ResolverMap, Session } from "../../types/graphql-utils";
 import { MutationLoginArgs } from "../../generated-types/graphql";
 import { registerSchema as loginSchema } from "../../utils/validators";
 import { formatYupError } from "../../utils/formatYupError";
@@ -16,7 +16,7 @@ const resolvers: ResolverMap = {
   Mutation: {
     login: async (
       _, {email, password}: MutationLoginArgs,
-      // { url, redisClient }
+      { req }
     ) => {
       try {
         await loginSchema.validate({email, password}, { abortEarly: false });
@@ -42,6 +42,9 @@ const resolvers: ResolverMap = {
       if (!isMatch) {
         return loginError;
       }
+
+      // login successful
+      (req.session as unknown as Session).userId = user.id;
 
       return null;
     }

@@ -1,7 +1,7 @@
 import { User } from "../../entity/User";
 import { ResolverMap } from "../../types/graphql-utils";
 import { GQL } from "../../types/schema";
-import * as bcrypt from "bcrypt";
+// import * as bcrypt from "bcrypt";
 import { registerSchema } from "../../utils/validators";
 import { formatYupError } from "../../utils/formatYupError";
 import { duplicateEmail } from "./errorMessages";
@@ -32,10 +32,11 @@ const resolvers: ResolverMap = {
         }];
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // const hashedPassword = await bcrypt.hash(password, 10);
       const user = User.create({
         email,
-        password: hashedPassword
+        password,
       })
         
       await user.save();

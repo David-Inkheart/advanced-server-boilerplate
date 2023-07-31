@@ -4,6 +4,7 @@ import { confirmEmailError, invalidLogin } from './errorMessages';
 import { badEmail, badPassword } from '../register/errorMessages';
 import { updateUserByEmail } from '../../data/dataSource/dataAcess/user';
 import { createDataSourceConn } from '../../data/dataSource/dataSourceConn';
+import { DataSource } from 'typeorm';
 
 const email = faker.internet.email();
 const password = faker.internet.password();
@@ -36,9 +37,13 @@ const loginExpectError = async (email: string, password: string, errorMessage: s
     }]
   });
 };
-
+let conn: DataSource;
 beforeAll(async () => {
-  await createDataSourceConn();
+  conn = await createDataSourceConn();
+});
+
+afterAll(async () => {
+  await conn.destroy();
 });
 
 describe('Login', () => {

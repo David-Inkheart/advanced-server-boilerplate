@@ -25,7 +25,7 @@ export const startServer = async () => {
       redisClient,
       // remove graphql from the url
       url: request.url.replace('/graphql', ''),
-      req: request,
+      session: session
     }),
   });
   // Create the yoga server

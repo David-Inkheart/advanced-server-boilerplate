@@ -35,6 +35,7 @@
       "@graphql-tools/graphql-file-loader": "^8.0.0",
       "@graphql-tools/load": "^8.0.0",
       "@graphql-tools/load-files": "^7.0.0",
+      "axios": "^1.4.0",
       "bcrypt": "^5.1.0",
       "connect-redis": "^7.1.0",
       "cors": "^2.8.5",

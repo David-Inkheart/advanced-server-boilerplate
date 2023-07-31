@@ -1,4 +1,5 @@
-import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn, BeforeInsert } from "typeorm";
+import { hashPassword } from "../utils/passwordService";
 
 @Entity("users")
 export class User extends BaseEntity {
@@ -13,4 +14,9 @@ export class User extends BaseEntity {
 
     @Column("boolean", { default: false })
     confirmed: boolean;
+
+    @BeforeInsert()
+    async hashPasswordBeforeInsert() { 
+        this.password = await hashPassword(this.password);
+    }
 }
